@@ -1,0 +1,17 @@
+{
+	"manifest_version": 3,
+	"name": "Don't redirect",
+	"version": "0.0.1",
+	"background": {
+      "service_worker": "background.js"
+    },
+	// "options_ui": {
+	// 	"page": "options.html",
+	// 	"open_in_tab": false
+	// }
+	// "action": {
+	// 	"default_popup": "popup.html"
+	// },
+	"permissions": ["tabs", "contextMenus"],
+	"host_permissions": ["<all_urls>"]
+}

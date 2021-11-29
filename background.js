@@ -1,6 +1,17 @@
+function link_2gis(link) {
+	// https://link.2gis.ru/[version]/...%2F...
+	const str = link.split('/').at(-1).split('%2F')[0]
+	return atob(str).split('\n')[0]
+}
+
 const URLS = {
 	'4pda.to': { type: 'search', key: 'u' },
 	'l.instagram.com': { type: 'search', key: 'u' },
+	'link.2gis.ru': { type: 'function', fun: link_2gis },
+	'redirect.epicgames.com': { type: 'search', key: 'redirectTo' },
+	'steamcommunity.com': { type: 'search', key: 'url' },
+	'via.intercom.io': { type: 'search', key: 'url' },
+	'vk.com': { type: 'search', key: 'to' },
 	'www.youtube.com': { type: 'search', key: 'q' },
 }
 
@@ -9,8 +20,11 @@ function fixUrl(old_url) {
 	const hostname = url.hostname
 	const conf = URLS[hostname] || {}
 
-	let new_url = ''
+	let new_url
 	switch (conf.type) {
+		case 'function':
+			new_url = conf.fun(old_url)
+			break;
 		case 'search':
 			new_url = (new URLSearchParams(url.search)).get(conf.key)
 			break;
@@ -19,11 +33,13 @@ function fixUrl(old_url) {
 			break;
 	}
 
-	return new_url
+	console.log('to', new_url)
+	// will return null if link is known but it's not redirect
+	return new_url // === old_url ? new_url : fixUrl(new_url)
 }
 
 chrome.runtime.onInstalled.addListener(function() {
-	// add ability to disable some of menus
+	// add ability to disable some menus
 
 	// chrome.contextMenus.create({
 	// 	id: 'remove_redirect',
@@ -44,9 +60,10 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 		// case 'remove_redirect':
 		// 	break;
 		case 'open_without_redirect':
-			chrome.tabs.create({
-				url: fixUrl(info.linkUrl)
-			})
+			let url = fixUrl(info.linkUrl)
+			if (url) {
+				chrome.tabs.create({ url })
+			}
 			break;
 	}
 })

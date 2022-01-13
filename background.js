@@ -6,6 +6,7 @@ function link_2gis(link) {
 
 const URLS = {
 	'4pda.to': { type: 'search', key: 'u' },
+	'adfoc.us': { type: 'search', key: 'url' },
 	'l.instagram.com': { type: 'search', key: 'u' },
 	'link.2gis.ru': { type: 'function', fun: link_2gis },
 	'redirect.epicgames.com': { type: 'search', key: 'redirectTo' },
@@ -33,7 +34,6 @@ function fixUrl(old_url) {
 			break;
 	}
 
-	console.log('to', new_url)
 	// will return null if link is known but it's not redirect
 	return new_url // === old_url ? new_url : fixUrl(new_url)
 }
@@ -61,6 +61,7 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 		// 	break;
 		case 'open_without_redirect':
 			let url = fixUrl(info.linkUrl)
+			console.log('to', url)
 			if (url) {
 				chrome.tabs.create({ url })
 			}
